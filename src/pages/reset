@@ -1,0 +1,251 @@
+import React, { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+export default function ResetPassword() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password_confirmation, setConfirm] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+
+    if (!token) {
+      setMessage("El enlace de recuperación no es válido ❌");
+      return;
+    }
+
+    try {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/reset-password`, {
+        token,
+        email,
+        password,
+        password_confirmation,
+      });
+
+      setMessage("Contraseña restablecida correctamente ✅");
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (err) {
+      if (err.response?.status === 422) {
+        setMessage("Las contraseñas no coinciden o son inválidas ❌");
+      } else if (err.response?.status === 400) {
+        setMessage("El enlace ya no es válido o ha expirado ❌");
+      } else {
+        setMessage("Ocurrió un error inesperado 😞");
+      }
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        :root {
+          --morado: #a259ff;
+          --morado-oscuro: #7a3eea;
+          --morado-claro: #f4e8ff;
+          --texto: #1e1e2f;
+          --gris: #6b6b6b;
+          --blanco: #ffffff;
+        }
+
+        .reset-page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, var(--morado) 0%, var(--morado-oscuro) 100%);
+          padding: 20px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .reset-page::before {
+          content: '';
+          position: absolute;
+          top: -30%;
+          left: -30%;
+          width: 160%;
+          height: 160%;
+          background: radial-gradient(circle at 20% 80%, var(--morado-claro) 0%, transparent 60%);
+          opacity: 0.3;
+          animation: pulse 12s infinite alternate ease-in-out;
+        }
+
+        .reset-container {
+          background: var(--blanco);
+          border-radius: 24px;
+          padding: 50px 40px;
+          width: 100%;
+          max-width: 420px;
+          box-shadow: 0 15px 40px rgba(162, 89, 255, 0.35);
+          z-index: 1;
+          animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reset-container h3 {
+          font-size: 28px;
+          font-weight: 700;
+          text-align: center;
+          margin-bottom: 30px;
+          background: linear-gradient(135deg, var(--morado) 0%, var(--morado-oscuro) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .reset-container form {
+          display: flex;
+          flex-direction: column;
+          gap: 22px;
+        }
+
+        .reset-container label {
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--texto);
+        }
+
+        .reset-container input {
+          padding: 14px 16px;
+          border-radius: 12px;
+          border: 2px solid #eee;
+          background: #f9f9fb;
+          font-size: 15px;
+          color: var(--texto);
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        .reset-container input:focus {
+          border-color: var(--morado);
+          box-shadow: 0 0 0 4px rgba(162, 89, 255, 0.1);
+          background: var(--blanco);
+          transform: translateY(-2px);
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, var(--morado) 0%, var(--morado-oscuro) 100%);
+          color: var(--blanco);
+          font-weight: 600;
+          font-size: 16px;
+          padding: 14px 0;
+          border-radius: 12px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 25px rgba(162, 89, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 30px rgba(162, 89, 255, 0.6);
+        }
+
+        .btn-primary:active {
+          transform: translateY(0);
+          box-shadow: 0 4px 15px rgba(162, 89, 255, 0.3);
+        }
+
+        .message {
+          margin-top: 20px;
+          padding: 14px;
+          border-radius: 12px;
+          text-align: center;
+          font-weight: 500;
+          font-size: 15px;
+          animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .message.success {
+          color: #0f5132;
+          background: rgba(34, 197, 94, 0.1);
+          border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .message.error {
+          color: #842029;
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          animation: shake 0.5s;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-4px); }
+          40%, 80% { transform: translateX(4px); }
+        }
+
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+          from { transform: scale(1); opacity: 0.25; }
+          to { transform: scale(1.2); opacity: 0.4; }
+        }
+
+        @media (max-width: 480px) {
+          .reset-container {
+            padding: 36px 24px;
+          }
+        }
+      `}</style>
+
+      <div className="reset-page">
+        <div className="reset-container">
+          <h3>Restablecer Contraseña</h3>
+          <form onSubmit={handleSubmit}>
+            <label>Correo electrónico</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <label>Nueva contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <label>Confirmar contraseña</label>
+            <input
+              type="password"
+              value={password_confirmation}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+
+            <button type="submit" className="btn-primary">
+              Actualizar contraseña
+            </button>
+          </form>
+
+          {message && (
+            <div
+              className={`message ${
+                message.includes("✅") ? "success" : "error"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}

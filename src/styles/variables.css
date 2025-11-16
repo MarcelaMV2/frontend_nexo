@@ -1,0 +1,88 @@
+:root {
+  /* 🎨 Paleta corporativa azul-acero */
+  --color-primary: #2b6cb0;          /* Azul acero */
+  --color-primary-light: #90cdf4;    /* Azul claro */
+  --color-primary-dark: #1a365d;     /* Azul oscuro profundo */
+  --color-accent: #38b2ac;           /* Verde azulado sutil */
+  --color-dark: #1a202c;             /* Casi negro azulado */
+  --color-gray: #718096;
+  --color-gray-light: #e2e8f0;
+  --color-bg: #edf2f7;               /* Fondo gris azulado claro */
+  --color-white: #ffffff;
+
+  /* 🖋 Tipografía */
+  --font-main: 'Poppins', sans-serif;
+
+  /* 🌫 Sombras y bordes */
+  --shadow-soft: 0 4px 12px rgba(43, 108, 176, 0.15);
+  --shadow-strong: 0 6px 20px rgba(26, 54, 93, 0.3);
+  --radius: 10px;
+}
+
+/******* ESTILOS LOGIN Y BOTONES *******/
+
+/* Avatar del login */
+.login-avatar {
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.login-avatar img {
+  width: 100%;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
+}
+.login-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(43, 108, 176, 0.4);
+}
+
+/* Botón de acción principal */
+.btn-login {
+  background-color: var(--color-primary); /* Azul sólido */
+  color: var(--color-white);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.btn-login:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
+}
+
+.btn-login:active {
+  background-color: #153e75; /* un tono más oscuro */
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(26, 54, 93, 0.3);
+}
+
+/* Mensajes de estado */
+.success-msg {
+  color: #2f855a;
+  background: rgba(56, 178, 172, 0.1);
+  border-left: 4px solid var(--color-accent);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.error-msg {
+  color: #c53030;
+  background: rgba(229, 62, 62, 0.1);
+  border-left: 4px solid #e53e3e;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}

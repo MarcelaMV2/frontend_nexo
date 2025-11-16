@@ -1,0 +1,260 @@
+/* Usa tu paleta ya definida en :root (no la repito) */
+
+/* Layout general */
+.nexo-page {
+  display: flex;
+  gap: 40px;
+  padding: 20px;
+}
+
+.nexo-main {
+  flex: 2;
+}
+
+.nexo-aside {
+  flex: 1;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-primary-dark);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+/* Encabezado y botón de vista previa */
+.nexo-title {
+  color: var(--color-primary-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.nexo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.nexo-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.nexo-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 8px 12px;
+}
+
+.nexo-btn-primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.nexo-btn-secondary {
+  background: var(--color-primary-dark);
+  color: var(--color-white);
+  padding: 10px 16px;
+}
+
+.nexo-btn-secondary:hover {
+  background: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* Formulario */
+.nexo-field {
+  margin-bottom: 12px;
+}
+
+.nexo-label {
+  display: block;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 6px;
+}
+
+.nexo-input,
+.nexo-select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--color-white);
+  color: var(--color-dark);
+  border: 2px solid var(--color-primary-dark);
+  border-radius: 10px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.nexo-input::placeholder {
+  color: var(--color-gray);
+}
+
+.nexo-input:focus,
+.nexo-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.35);
+}
+
+/* Selector de tipos (grid de chips) */
+.nexo-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* ===== OVERRIDES PALETA NEXO (sin morados) ===== */
+
+/* Chips de tipos (selector) */
+.nexo-type-chip {
+  background: var(--color-white);            /* #e2e8f0 */
+  border: 1.5px solid var(--color-primary-dark);
+  color: var(--color-dark);   
+  text-align: left;                    /* #1a202c */
+}
+.nexo-type-chip:hover {
+  background: rgba(144, 205, 244, 0.35);          /* ~ primary-light con transparencia */
+  transform: translateY(-1px);
+}
+.nexo-type-chip.is-active {
+  background: rgba(43, 108, 176, 0.12);           /* primary suave */
+  border-color: var(--color-primary);             /* #2b6cb0 */
+  color: var(--color-dark);
+}
+
+/* “Opciones” (para checkbox/select/radio) */
+.nexo-opcion {
+  background: var(--color-white);                 /* blanco */
+  border: 1.5px solid var(--color-gray-light);
+}
+.nexo-opcion-remove {
+  color: var(--color-primary);                    /* azul Nexo */
+}
+
+/* Panel lateral (lista DnD) */
+.nexo-aside {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-primary-dark);            /* ya estaba */
+}
+.nexo-item {
+  background: var(--color-dark);
+  border: 1.5px solid var(--color-gray-light);
+}
+.nexo-item.dragging {
+  background: rgba(9, 62, 31, 0.18);           /* highlight azul al arrastrar */
+  box-shadow: 0 4px 10px rgba(26, 54, 93, 0.18);
+}
+.nexo-item-type {
+  color: var(--color-primary-dark);               /* #1a365d */
+}
+.nexo-item-remove {
+  color: var(--color-primary-dark);
+}
+
+/* Inputs/selects coherentes */
+.nexo-input,
+.nexo-select {
+  border: 2px solid var(--color-primary-dark);
+  background: var(--color-white);
+  color: var(--color-dark);
+}
+/* .nexo-input:focus,
+.nexo-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-dark);
+} */
+
+/* Botones coherentes */
+.nexo-btn-primary { /* Vista previa, agregar opción, etc. */
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+.nexo-btn-primary:hover {
+  background: var(--color-primary-dark);
+}
+.nexo-btn-secondary { /* Agregar/Actualizar campo */
+  background: var(--color-primary-dark);
+  color: var(--color-white);
+}
+.nexo-btn-secondary:hover {
+  background: var(--color-primary);
+}
+
+
+/* Checkbox “Obligatorio” */
+.nexo-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-dark);
+}
+
+/* Panel lateral (lista DnD) */
+.nexo-aside-title {
+  color: var(--color-primary-dark);
+  margin-bottom: 10px;
+}
+
+.nexo-aside-empty {
+  color: var(--color-primary);
+}
+
+.nexo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nexo-item {
+  background: rgba(43, 108, 176, 0.10);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nexo-item.dragging {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 8px rgba(0,0,0,.2);
+}
+
+.nexo-item-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  cursor: pointer;
+}
+
+.nexo-item-type {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.nexo-item-remove {
+  background: transparent;
+  border: none;
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Utilidades pequeñas */
+.nexo-row {
+  display: flex;
+  gap: 10px;
+}
+
+.nexo-grow {
+  flex: 1;
+}

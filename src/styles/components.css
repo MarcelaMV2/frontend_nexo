@@ -1,0 +1,308 @@
+/************ VARIABLES DE COLOR ************/
+:root {
+  --color-primary: #2b6cb0;         /* Azul acero */
+  --color-primary-light: #90cdf4;   /* Azul claro */
+  --color-primary-dark: #1a365d;    /* Azul oscuro profundo */
+  --color-accent: #38b2ac;          /* Verde azulado sutil */
+  --color-dark: #1a202c;
+  --color-gray: #718096;
+  --color-gray-light: #e2e8f0;
+  --color-bg: #edf2f7;
+  --color-white: #ffffff;
+  --sidebar-bg: linear-gradient(30deg, #1a365d 0%, #2b6cb0 100%);
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --radius: 10px;
+  --shadow-soft: 0 4px 10px rgba(43, 108, 176, 0.25);
+}
+
+/************ BOTONES ************/
+.btn {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+}
+
+/* BOTÓN PRINCIPAL */
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  width: 200px;
+  height: 50px;
+  font-size: 18px;
+  box-shadow: var(--shadow-soft);
+}
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 6px 18px rgba(43, 108, 176, 0.4);
+}
+
+/* BOTÓN SECUNDARIO */
+.btn-secondary {
+  background: var(--color-primary-light);
+  color: var(--color-dark);
+}
+.btn-secondary:hover {
+  background: #bee3f8;
+}
+
+/************ INPUTS ************/
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--color-gray-light);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  transition: 0.3s;
+  font-size: 15px;
+  background: var(--color-white);
+  color: var(--color-dark);
+}
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.15);
+  outline: none;
+}
+
+/************ LOGIN ************/
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: var(--color-bg);
+}
+
+.login-left {
+  flex: 1;
+  background: url("../assets/login.png") center/cover no-repeat;
+  border-right: 2px solid var(--color-primary-light);
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffffff 60%, #edf2f7 100%);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 600px;
+  height: 700px;
+  text-align: center;
+  border: solid 3px var(--color-primary);
+  border-radius: 30px;
+  padding: 50px;
+  background: var(--color-white);
+  box-shadow: 0 4px 20px rgba(43, 108, 176, 0.15);
+}
+
+.login-form h2 {
+  color: var(--color-primary-dark);
+  margin-bottom: 10px;
+}
+
+.login-form label {
+  font-size: 14px;
+  color: var(--color-gray);
+  text-align: left;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/************ SIDEBAR ************/
+.sidebar {
+  width: 230px;
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  color: var(--text-primary);
+}
+
+.sidebar-logo {
+  color: var(--text-primary);
+  font-weight: 800;
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-logo span {
+  color: var(--color-primary-light);
+}
+
+/* BOTÓN CREAR FORMULARIO */
+.sidebar-create-btn {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  margin-top: 30px;
+  box-shadow: 0 6px 16px rgba(43, 108, 176, 0.35);
+}
+.sidebar-create-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+.sidebar-item.active .sidebar-icon {
+  color: var(--color-primary-light);
+}
+
+/************ NAVEGACIÓN ************/
+.sidebar-nav {
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+.sidebar-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.sidebar-icon {
+  font-size: 18px;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.sidebar-logout {
+  background: transparent;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+.sidebar-logout:hover {
+  color: var(--color-primary-light);
+}
+
+/************ CAMPOS FORMULARIOS ************/
+.campos-container {
+  padding: 40px;
+  background: var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.campos-titulo {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.campos-form {
+  margin-top: 25px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.form-check {
+  align-items: center;
+  justify-content: center;
+}
+
+/* INPUT CAMPOS */
+.input {
+  border: 1px solid var(--color-primary-light);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 14px;
+  margin-top: 4px;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
+}
+
+/* BOTONES CAMPOS */
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+}
+
+/* LISTA DE CAMPOS */
+.campos-lista {
+  margin-top: 40px;
+}
+
+.campo-item {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg);
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.campo-etiqueta {
+  flex: 1;
+  color: var(--color-dark);
+}
+
+.campo-obligatorio {
+  color: var(--color-primary);
+  font-weight: bold;
+}
