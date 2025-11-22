@@ -3,6 +3,15 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import "./VistaPreviaFormulario.css";
 
+// Después de tus imports, AGREGA esta constante:
+const CAMPO_EMAIL_AUTO = {
+  id: "email-auto",
+  etiqueta: "Correo electrónico",
+  tipo: "email",
+  obligatorio: true,
+  opciones: [],
+};
+
 export default function VistaPreviaFormulario() {
   const { id } = useParams();
   const [campos, setCampos] = useState([]);
@@ -68,10 +77,14 @@ export default function VistaPreviaFormulario() {
     const getAcceptTypes = (campo) => {
       const tipoArchivo = campo.opciones?.[0] || "todos";
       switch (tipoArchivo) {
-        case "documentos": return ".pdf,.doc,.docx";
-        case "imagenes":   return ".jpg,.jpeg,.png";
-        case "videos":     return ".mp4,.mov";
-        default:           return ".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4,.mov";
+        case "documentos":
+          return ".pdf,.doc,.docx";
+        case "imagenes":
+          return ".jpg,.jpeg,.png";
+        case "videos":
+          return ".mp4,.mov";
+        default:
+          return ".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp4,.mov";
       }
     };
 
@@ -80,65 +93,109 @@ export default function VistaPreviaFormulario() {
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="text" className="vp-input" placeholder="Escribe aquí..." required={campo.obligatorio} />
+            <input
+              type="text"
+              className="vp-input"
+              placeholder="Escribe aquí..."
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "texto_largo":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <textarea className="vp-textarea" placeholder="Escribe aquí..." rows={4} required={campo.obligatorio} />
+            <textarea
+              className="vp-textarea"
+              placeholder="Escribe aquí..."
+              rows={4}
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "numero":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="number" className="vp-input" required={campo.obligatorio} />
+            <input
+              type="number"
+              className="vp-input"
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "fecha":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="date" className="vp-input" required={campo.obligatorio} />
+            <input
+              type="date"
+              className="vp-input"
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "email":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="email" className="vp-input" placeholder="correo@ejemplo.com" required={campo.obligatorio} />
+            <input
+              type="email"
+              className="vp-input"
+              placeholder="correo@ejemplo.com"
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "telefono":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="tel" className="vp-input" placeholder="+591 ..." required={campo.obligatorio} />
+            <input
+              type="tel"
+              className="vp-input"
+              placeholder="+591 ..."
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "direccion":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="text" className="vp-input" placeholder="Calle, número, zona..." required={campo.obligatorio} />
+            <input
+              type="text"
+              className="vp-input"
+              placeholder="Calle, número, zona..."
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "enlace":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="url" className="vp-input" placeholder="https://..." required={campo.obligatorio} />
+            <input
+              type="url"
+              className="vp-input"
+              placeholder="https://..."
+              required={campo.obligatorio}
+            />
           </div>
         );
       case "archivo":
         return (
           <div key={campo.id} className="vp-field">
             {label}
-            <input type="file" className="vp-file" accept={getAcceptTypes(campo)} required={campo.obligatorio} />
+            <input
+              type="file"
+              className="vp-file"
+              accept={getAcceptTypes(campo)}
+              required={campo.obligatorio}
+            />
             <small className="vp-help">
-              Archivos permitidos: {getAcceptTypes(campo).replaceAll(".", "").replaceAll(",", ", ")}
+              Archivos permitidos:{" "}
+              {getAcceptTypes(campo).replaceAll(".", "").replaceAll(",", ", ")}
             </small>
           </div>
         );
@@ -175,7 +232,9 @@ export default function VistaPreviaFormulario() {
             <select className="vp-select" required={campo.obligatorio}>
               <option value="">Selecciona una opción</option>
               {campo.opciones.map((op, i) => (
-                <option key={i} value={op}>{op}</option>
+                <option key={i} value={op}>
+                  {op}
+                </option>
               ))}
             </select>
           </div>
@@ -198,8 +257,12 @@ export default function VistaPreviaFormulario() {
     <div className="vp-container">
       <div className="vp-header">
         <div>
-          <h2 className="vp-title">{formulario?.titulo || "Formulario sin título"}</h2>
-          {formulario?.descripcion && <p className="vp-desc">{formulario.descripcion}</p>}
+          <h2 className="vp-title">
+            {formulario?.titulo || "Formulario sin título"}
+          </h2>
+          {formulario?.descripcion && (
+            <p className="vp-desc">{formulario.descripcion}</p>
+          )}
         </div>
 
         <Link to={`/dashboard/formulario/${id}/campos`} className="vp-link">
@@ -207,17 +270,52 @@ export default function VistaPreviaFormulario() {
         </Link>
       </div>
 
-      <div className="vp-card">
+      {/* <div className="vp-card">
         {campos.length === 0 ? (
           <p className="vp-empty">Aún no hay campos.</p>
+        ) : (
+          campos.map((c) => renderCampo(c))
+        )}
+      </div> */}
+      <div className="vp-card">
+        {/* 👇 Campo de email automático SIEMPRE primero */}
+        {renderCampo(CAMPO_EMAIL_AUTO)}
+
+        {/* 👇 Separador visual opcional */}
+        <div
+          style={{
+            borderTop: "2px solid #e2e8f0",
+            margin: "20px 0",
+            paddingTop: "20px",
+          }}
+        >
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: "0.875rem",
+              marginBottom: "16px",
+            }}
+          >
+            Información adicional del formulario:
+          </p>
+        </div>
+
+        {campos.length === 0 ? (
+          <p className="vp-empty">
+            El dueño del formulario aún no ha agregado campos personalizados.
+          </p>
         ) : (
           campos.map((c) => renderCampo(c))
         )}
       </div>
 
       <div className="vp-actions">
-        <button type="button" disabled className="vp-btn vp-btn-primary">Enviar (demo)</button>
-        <button type="button" disabled className="vp-btn vp-btn-ghost">Guardar borrador (demo)</button>
+        <button type="button" disabled className="vp-btn vp-btn-primary">
+          Enviar (demo)
+        </button>
+        <button type="button" disabled className="vp-btn vp-btn-ghost">
+          Guardar borrador (demo)
+        </button>
       </div>
     </div>
   );

@@ -3,6 +3,14 @@ import axios from "axios";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import "./VistaPreviaFormulario.css";
 
+const CAMPO_EMAIL_AUTO = {
+  id: "email-auto",
+  etiqueta: "Correo electrónico",
+  tipo: "email",
+  obligatorio: true,
+  opciones: [],
+};
+
 export default function FormularioPublico() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -90,12 +98,30 @@ export default function FormularioPublico() {
     }
   };
 
-  // ⤵️ CORREGIDO: usa `respuestas`, una sola bandera (`enviando`) y `API`
   const onSubmit = async (e) => {
     e.preventDefault();
     setEnviando(true);
+
     try {
-      const payload = { respuestas }; // <--- AQUÍ estaba el error (antes: values)
+      // 👇 Validar que el email exista
+      const emailPostulante = respuestas["email-auto"];
+
+      if (!emailPostulante || !emailPostulante.includes("@")) {
+        alert("Por favor ingresa un correo electrónico válido");
+        setEnviando(false);
+        return;
+      }
+
+      // 👇 Separar el email del resto de respuestas
+      const { "email-auto": email, ...respuestasFormulario } = respuestas;
+
+      // 👇 CORRECTO: Enviar email_postulante separado
+      const payload = {
+        email_postulante: email, // 👈 Campo separado
+        respuestas: respuestasFormulario, // 👈 Solo las respuestas de campos dinámicos
+      };
+
+      console.log("Enviando payload:", payload); // Para debug
 
       await axios.post(`${API}/api/formularios/${id}/responder`, payload, {
         headers: { Accept: "application/json" },
@@ -104,7 +130,7 @@ export default function FormularioPublico() {
       // Redirige a la página de gracias
       navigate(`/formularios/${id}/gracias`, { replace: true });
     } catch (err) {
-      console.error(err);
+      console.error("Error completo:", err.response?.data || err);
       alert("No se pudo enviar el formulario. Intenta nuevamente.");
       setEnviando(false);
     }
@@ -426,12 +452,6 @@ export default function FormularioPublico() {
             </p>
           )}
         </div>
-        <Link
-          to={`/formularios/${id}/preview`}
-          style={{ color: "#1a365d", textDecoration: "none", fontWeight: 600 }}
-        >
-          Ver vista previa
-        </Link>
       </div>
 
       <form
@@ -443,8 +463,33 @@ export default function FormularioPublico() {
           padding: 16,
         }}
       >
+        {/* 👇 Campo de email automático SIEMPRE primero */}
+        {renderCampo(CAMPO_EMAIL_AUTO)}
+
+        {/* 👇 Separador visual */}
+        <div
+          style={{
+            borderTop: "2px solid #cbd5e0",
+            margin: "20px 0",
+            paddingTop: "20px",
+          }}
+        >
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: "0.875rem",
+              marginBottom: "16px",
+              fontWeight: 500,
+            }}
+          >
+            📋 Información adicional:
+          </p>
+        </div>
+
         {campos.length === 0 ? (
-          <p style={{ color: "#2b6cb0" }}>Aún no hay campos.</p>
+          <p style={{ color: "#2b6cb0" }}>
+            No hay campos adicionales configurados.
+          </p>
         ) : (
           campos.map((c) => renderCampo(c))
         )}

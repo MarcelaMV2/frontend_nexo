@@ -21,6 +21,7 @@ import CondicionesFormulario from "./pages/CondicionesFormulario";
 import RegistrosRechazados from "./pages/RegistrosRechazados";
 import RegistrosAprobados from "./pages/RegistrosAprobados";
 import EntrevistasAgendadas from "./pages/EntrevistasAgendadas";
+import EntrevistaConfirmada from "./pages/EntrevistaConfirmada";
 
 function App() {
   return (
@@ -98,6 +99,7 @@ function App() {
         <Route path="/formularios/:id/gracias" element={<Gracias />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/entrevista-confirmada" element={<EntrevistaConfirmada />} />
       </Routes>
     </BrowserRouter>
   );

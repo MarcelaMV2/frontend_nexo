@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import SimpleModal from "./SimpleModal";
+import './EntrevistasAgendadas.css';
+
 // Recorta textos largos para no romper la tabla
 function cut(s, n = 40) {
   if (!s) return "";
   const t = String(s);
   return t.length > n ? t.slice(0, n) + "…" : t;
+}
+
+function formatHora(horaRaw) {
+  if (!horaRaw) return "";
+  const s = String(horaRaw);
+
+  // Busca cualquier patrón HH:MM dentro del string
+  const match = s.match(/(\d{2}:\d{2})/);
+  return match ? match[1] : s;
 }
 
 export default function EntrevistasAgendadas() {
@@ -63,16 +75,28 @@ export default function EntrevistasAgendadas() {
   const badge = (estado) => {
     const map = {
       pendiente: "bg-yellow-100 text-yellow-800",
+      confirmada: "bg-blue-100 text-blue-800",
       realizada: "bg-green-100 text-green-800",
-      cancelada: "bg-red-100 text-red-800",
+      cancelada_reclutador: "bg-red-100 text-red-800",
+      cancelada_postulante: "bg-red-100 text-red-800",
+      solicitud_reprogramacion: "bg-orange-100 text-orange-800",
     };
+
+    const labelMap = {
+      pendiente: "Pendiente",
+      confirmada: "Confirmada",
+      realizada: "Realizada",
+      cancelada_reclutador: "Cancelada (RRHH)",
+      cancelada_postulante: "Cancelada (Postulante)",
+      solicitud_reprogramacion: "Solicita reprogramación",
+    };
+
+    const cls = map[estado] || "bg-gray-100 text-gray-700";
+    const label = labelMap[estado] || (estado ? estado : "—");
+
     return (
-      <span
-        className={`px-2 py-1 rounded text-xs font-semibold ${
-          map[estado] || "bg-gray-100 text-gray-700"
-        }`}
-      >
-        {estado ? estado[0].toUpperCase() + estado.slice(1) : "—"}
+      <span className={`px-2 py-1 rounded text-xs font-semibold ${cls}`}>
+        {label}
       </span>
     );
   };
@@ -140,90 +164,121 @@ export default function EntrevistasAgendadas() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[#2b6cb0] text-white">
-              <th className="text-left p-3">Postulante / Datos (5)</th>
-              <th className="text-left p-3">Fecha/Hora</th>
-              <th className="text-left p-3">Estado</th>
-              <th className="text-left p-3">Acciones</th>
+              <th className="text-left px-6 p-3">Postulante</th>
+              <th className="text-left px-6 p-3">Fecha</th>
+              <th className="text-left px-6 p-3">Hora</th>
+              <th className="text-left px-6 p-3">Estado</th>
+              <th className="text-left px-6 p-3">Acciones</th>
             </tr>
           </thead>
 
           <tbody>
             {items.length ? (
-              items.map((it) => (
-                <tr key={it.id} className="odd:bg-white even:bg-gray-50">
-                  <td className="p-3 align-top">
-                    {/* Línea principal: nombre si existe (sino “—”) */}
-                    <div className="font-medium">
-                      {it.postulante || it.nombre || "—"}
-                    </div>
+              items.map((it) => {
+                const esCancelada =
+                  it.estado === "cancelada_reclutador" ||
+                  it.estado === "cancelada_postulante";
+                const esRealizada = it.estado === "realizada";
+                const esConfirmada = it.estado === "confirmada";
+                const esSolicitudReprog =
+                  it.estado === "solicitud_reprogramacion";
+                const esPendiente = it.estado === "pendiente";
 
-                    {/* Preview: hasta 5 primeros campos del formulario */}
-                    {Array.isArray(it.preview) && it.preview.length > 0 && (
-                      <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-                        {it.preview
-                          .filter(
-                            (p) => (p?.valor ?? "").toString().trim() !== ""
+                // Reglas:
+                // - Reprogramar: deshabilitada si está cancelada, realizada o confirmada
+                const disableReprogramar =
+                  esCancelada || esRealizada || esConfirmada;
+
+                // - Cancelar: deshabilitada si está cancelada o realizada
+                const disableCancelar = esCancelada || esRealizada;
+
+                // - Marcar realizada: deshabilitada si está cancelada o realizada
+                const disableMarcarRealizada = esCancelada || esRealizada;
+
+                // ======= NUEVO: nombre + correo a partir de preview =======
+                const preview = Array.isArray(it.preview) ? it.preview : [];
+
+                const campoNombre = preview.find((p) =>
+                  /nombre/i.test(p?.etiqueta ?? "")
+                );
+                const campoCorreo = preview.find((p) =>
+                  /(correo|email)/i.test(p?.etiqueta ?? "")
+                );
+
+                const nombre =
+                  it.postulante || campoNombre?.valor || it.nombre || "—";
+                const correo = campoCorreo?.valor || "";
+
+                return (
+                  <tr key={it.id} className="odd:bg-white even:bg-gray-50">
+                    {/* COL 1: nombre + correo */}
+                    <td className="px-6 py-3 align-top">
+                      <div className="font-medium">{nombre}</div>
+                      {correo && (
+                        <div className="text-xs text-gray-600 mt-0.5">
+                          Correo: <span>{cut(correo, 40)}</span>
+                        </div>
+                      )}
+                    </td>
+
+                    {/* COL 2: fecha */}
+                    <td className="px-6 py-3">{it.fecha || "—"}</td>
+
+                    {/* COL 3: hora */}
+                    <td className="px-6 py-3">{formatHora(it.hora)}</td>
+
+                    {/* COL 4: estado */}
+                    <td className="px-6 py-3">{badge(it.estado)}</td>
+
+                    {/* COL 5: acciones */}
+                    <td className="px-6 py-3 space-x-2">
+                      <button
+                        className="btn-reprogramar px-3 py-1 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => {
+                          setTarget(it);
+                          setNewFecha(it.fecha || "");
+                          setNewHora(it.hora ? it.hora.slice(0, 5) : "");
+                          setShowReprog(true);
+                        }}
+                        disabled={disableReprogramar}
+                      >
+                        Reprogramar
+                      </button>
+
+                      <button
+                        className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() =>
+                          cambiarEstado(
+                            it.id,
+                            "cancelada_reclutador",
+                            "Cancelado por RRHH"
                           )
-                          .slice(0,1)
-                          .map((p, k) => (
-                            <div
-                              key={k}
-                              className="text-xs text-gray-600"
-                              title={`${p.etiqueta}: ${p.valor}`}
-                            >
-                              <span className="font-semibold">
-                                {p.etiqueta}:
-                              </span>{" "}
-                              <span>{cut(p.valor, 40)}</span>
-                            </div>
-                          ))}
-                      </div>
-                    )}
-                  </td>
+                        }
+                        disabled={disableCancelar}
+                      >
+                        Cancelar
+                      </button>
 
-                  <td className="p-3">
-                    {it.fecha || "—"} {it.hora ? it.hora.slice(0, 5) : ""}
-                  </td>
-                  <td className="p-3">{badge(it.estado)}</td>
-                  <td className="p-3 space-x-2">
-                    <button
-                      className="px-3 py-1 rounded bg-[#2b6cb0] text-white hover:opacity-90"
-                      onClick={() => {
-                        setTarget(it);
-                        setShowReprog(true);
-                      }}
-                      disabled={it.estado === "cancelada"}
-                    >
-                      Reprogramar
-                    </button>
-                    <button
-                      className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"
-                      onClick={() =>
-                        cambiarEstado(it.id, "cancelada", "Cancelado por RRHH")
-                      }
-                      disabled={it.estado === "cancelada"}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"
-                      onClick={() =>
-                        cambiarEstado(
-                          it.id,
-                          "realizada",
-                          "Marcado como realizado"
-                        )
-                      }
-                      disabled={it.estado !== "pendiente"}
-                    >
-                      Marcar realizada
-                    </button>
-                  </td>
-                </tr>
-              ))
+                      <button
+                        className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() =>
+                          cambiarEstado(
+                            it.id,
+                            "realizada",
+                            "Marcado como realizado"
+                          )
+                        }
+                        disabled={disableMarcarRealizada}
+                      >
+                        Marcar realizada
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={4} className="p-6 text-center text-gray-500">
+                <td colSpan={5} className="p-6 text-center text-gray-500">
                   No hay entrevistas.
                 </td>
               </tr>
@@ -233,7 +288,7 @@ export default function EntrevistasAgendadas() {
       </div>
 
       {total > porPagina && (
-        <div className="flex items-center gap-2 justify-center mt-3">
+        <div className="flex itemsQueued-center gap-2 justify-center mt-3">
           <button
             className="px-3 py-1 rounded border"
             disabled={pagina === 1}
@@ -259,53 +314,43 @@ export default function EntrevistasAgendadas() {
         </div>
       )}
 
-      {showReprog && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl border p-5 w-[460px]">
-            <h3 className="font-bold text-lg mb-3">Reprogramar entrevista</h3>
-            <div className="space-y-3">
-              <label className="block">
-                <span className="text-sm">Fecha</span>
-                <input
-                  type="date"
-                  className="border rounded px-3 py-2 w-full"
-                  value={newFecha}
-                  onChange={(e) => setNewFecha(e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm">Hora</span>
-                <input
-                  type="time"
-                  className="border rounded px-3 py-2 w-full"
-                  value={newHora}
-                  onChange={(e) => setNewHora(e.target.value)}
-                />
-              </label>
-            </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                className="px-3 py-1 rounded border"
-                onClick={() => {
-                  setShowReprog(false);
-                  setTarget(null);
-                  setNewFecha("");
-                  setNewHora("");
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-3 py-1 rounded bg-[#2b6cb0] text-white"
-                disabled={!newFecha || !newHora}
-                onClick={() => reprogramar(target.id, newFecha, newHora)}
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
+      <SimpleModal
+        isOpen={showReprog}
+        title="Reprogramar entrevista"
+        onAccept={() => {
+          if (!target) return;
+          reprogramar(target.id, newFecha, newHora);
+        }}
+        onClose={() => {
+          setShowReprog(false);
+          setTarget(null);
+          setNewFecha("");
+          setNewHora("");
+        }}
+        acceptDisabled={!newFecha || !newHora}
+      >
+        <div className="space-y-3">
+          <label className="block">
+            <span className="text-sm">Fecha</span>
+            <input
+              type="date"
+              className="border rounded px-3 py-2 w-full"
+              value={newFecha}
+              onChange={(e) => setNewFecha(e.target.value)}
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm">Hora</span>
+            <input
+              type="time"
+              className="border rounded px-3 py-2 w-full"
+              value={newHora}
+              onChange={(e) => setNewHora(e.target.value)}
+            />
+          </label>
         </div>
-      )}
+      </SimpleModal>
     </div>
   );
 }

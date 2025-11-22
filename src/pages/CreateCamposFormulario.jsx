@@ -2,8 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import {
-  Type, FileText, Calendar, CheckSquare, ChevronDown,
-  File, Hash, Mail, Phone, MapPin, CircleDot, Link2,
+  Type,
+  FileText,
+  Calendar,
+  CheckSquare,
+  ChevronDown,
+  File,
+  Hash,
+  Mail,
+  Phone,
+  MapPin,
+  CircleDot,
+  Link2,
 } from "lucide-react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import "./CreateCamposFormulario.css"; // <<--- IMPORTA EL CSS
@@ -79,11 +89,18 @@ export default function CreateCamposFormulario() {
         opcionesFinales = [tipoArchivo];
       }
 
-      const dataCampo = { etiqueta, tipo, obligatorio, opciones: opcionesFinales };
+      const dataCampo = {
+        etiqueta,
+        tipo,
+        obligatorio,
+        opciones: opcionesFinales,
+      };
 
       if (editando && campoActual) {
         const response = await axios.put(
-          `${import.meta.env.VITE_API_BASE_URL}/api/campos-formulario/${campoActual.id}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/campos-formulario/${
+            campoActual.id
+          }`,
           dataCampo,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -138,7 +155,11 @@ export default function CreateCamposFormulario() {
 
   const tiposDeCampo = [
     { value: "texto_corto", label: "Texto corto", icon: <Type size={18} /> },
-    { value: "texto_largo", label: "Texto largo", icon: <FileText size={18} /> },
+    {
+      value: "texto_largo",
+      label: "Texto largo",
+      icon: <FileText size={18} />,
+    },
     { value: "fecha", label: "Fecha", icon: <Calendar size={18} /> },
     { value: "checkbox", label: "CheckBox", icon: <CheckSquare size={18} /> },
     { value: "radio", label: "Selección única", icon: <CircleDot size={18} /> },
@@ -157,10 +178,46 @@ export default function CreateCamposFormulario() {
       <div className="nexo-main">
         <h2 className="nexo-title">
           Campos del Formulario
-          <Link to={`/formularios/${id}/preview`} className="nexo-btn nexo-btn-primary">
+          <Link
+            to={`/formularios/${id}/preview`}
+            className="nexo-btn nexo-btn-primary"
+          >
             Vista previa
           </Link>
         </h2>
+
+        {/* 👇 AGREGAR ESTA NOTA INFORMATIVA */}
+        <div
+          style={{
+            background: "#e0f2fe",
+            border: "1px solid #7dd3fc",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            marginBottom: "20px",
+            display: "flex",
+            gap: "10px",
+            alignItems: "start",
+          }}
+        >
+          <span style={{ fontSize: "20px" }}>ℹ️</span>
+          <div style={{ flex: 1 }}>
+            <strong
+              style={{
+                color: "#0369a1",
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
+              Campo automático de correo electrónico
+            </strong>
+            <p style={{ color: "#075985", margin: 0, fontSize: "0.9rem" }}>
+              Todos los formularios incluyen automáticamente un campo de{" "}
+              <strong>correo electrónico obligatorio</strong> como primer campo.
+              Este no aparece aquí pero sí en la vista previa y en el formulario
+              público.
+            </p>
+          </div>
+        </div>
 
         <form onSubmit={handleGuardarCampo}>
           <div className="nexo-field">
@@ -183,7 +240,9 @@ export default function CreateCamposFormulario() {
                   key={campo.value}
                   type="button"
                   onClick={() => setTipo(campo.value)}
-                  className={`nexo-type-chip ${tipo === campo.value ? "is-active" : ""}`}
+                  className={`nexo-type-chip ${
+                    tipo === campo.value ? "is-active" : ""
+                  }`}
                 >
                   {campo.icon}
                   {campo.label}
@@ -203,7 +262,10 @@ export default function CreateCamposFormulario() {
                   value={nuevaOpcion}
                   onChange={(e) => setNuevaOpcion(e.target.value)}
                 />
-                <button onClick={agregarOpcion} className="nexo-btn nexo-btn-primary">
+                <button
+                  onClick={agregarOpcion}
+                  className="nexo-btn nexo-btn-primary"
+                >
                   + Agregar
                 </button>
               </div>
@@ -212,7 +274,10 @@ export default function CreateCamposFormulario() {
                 {opciones.map((op, i) => (
                   <li key={i} className="nexo-opcion">
                     <span>{op}</span>
-                    <button onClick={() => eliminarOpcion(i)} className="nexo-opcion-remove">
+                    <button
+                      onClick={() => eliminarOpcion(i)}
+                      className="nexo-opcion-remove"
+                    >
                       ✕
                     </button>
                   </li>
@@ -229,7 +294,9 @@ export default function CreateCamposFormulario() {
                 onChange={(e) => setTipoArchivo(e.target.value)}
                 className="nexo-select"
               >
-                <option value="todos">Todos (PDF, Word, imágenes, videos)</option>
+                <option value="todos">
+                  Todos (PDF, Word, imágenes, videos)
+                </option>
                 <option value="documentos">Solo documentos (PDF, Word)</option>
                 <option value="imagenes">Solo imágenes (JPG, PNG)</option>
                 <option value="videos">Solo videos (MP4, MOV)</option>
@@ -248,7 +315,11 @@ export default function CreateCamposFormulario() {
             </label>
           </div>
 
-          <button type="submit" onClick={handleGuardarCampo} className="nexo-btn nexo-btn-secondary">
+          <button
+            type="submit"
+            onClick={handleGuardarCampo}
+            className="nexo-btn nexo-btn-secondary"
+          >
             {editando ? "Actualizar campo" : "Agregar campo"}
           </button>
         </form>
@@ -263,16 +334,26 @@ export default function CreateCamposFormulario() {
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="campos">
               {(provided) => (
-                <ul {...provided.droppableProps} ref={provided.innerRef} className="nexo-list">
+                <ul
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="nexo-list"
+                >
                   {campos.map((campo, index) => (
-                    <Draggable key={campo.id.toString()} draggableId={campo.id.toString()} index={index}>
+                    <Draggable
+                      key={campo.id.toString()}
+                      draggableId={campo.id.toString()}
+                      index={index}
+                    >
                       {(provided, snapshot) => (
                         <li
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`nexo-item ${snapshot.isDragging ? "dragging" : ""}`}
-                          style={provided.draggableProps.style}  // mantener estilos de posición del DnD
+                          className={`nexo-item ${
+                            snapshot.isDragging ? "dragging" : ""
+                          }`}
+                          style={provided.draggableProps.style} // mantener estilos de posición del DnD
                           onClick={() => {
                             setCampoActual(campo);
                             setEtiqueta(campo.etiqueta);
@@ -289,14 +370,24 @@ export default function CreateCamposFormulario() {
                           }}
                         >
                           <div className="nexo-item-main">
-                            {tiposDeCampo.find((t) => t.value === campo.tipo)?.icon}
+                            {
+                              tiposDeCampo.find((t) => t.value === campo.tipo)
+                                ?.icon
+                            }
                             <span>{campo.etiqueta}</span>
                             <span className="nexo-item-type">
-                              — {tiposDeCampo.find((t) => t.value === campo.tipo)?.label}
+                              —{" "}
+                              {
+                                tiposDeCampo.find((t) => t.value === campo.tipo)
+                                  ?.label
+                              }
                             </span>
                           </div>
 
-                          <button onClick={() => handleEliminarCampo(campo.id)} className="nexo-item-remove">
+                          <button
+                            onClick={() => handleEliminarCampo(campo.id)}
+                            className="nexo-item-remove"
+                          >
                             ✕
                           </button>
                         </li>

@@ -1,0 +1,377 @@
+/* ==== VARIABLES DE COLOR ==== */
+:root {
+  --color-primary: #2b6cb0;
+  --color-primary-light: #90cdf4;
+  --color-primary-dark: #1a365d;
+  --color-accent: #38b2ac;
+  --color-dark: #1a202c;
+  --color-gray: #718096;
+  --color-gray-light: #e2e8f0;
+  --color-bg: #edf2f7;
+  --color-white: #ffffff;
+}
+
+/* ==== CONTENEDOR PRINCIPAL ==== */
+.p-6 {
+  background: var(--color-bg) !important;
+  min-height: 100vh;
+}
+
+/* ==== TÍTULO ==== */
+h2.text-2xl.font-bold {
+  color: var(--color-primary-dark) !important;
+  font-size: 1.75rem !important;
+  margin-bottom: 1.5rem !important;
+  letter-spacing: -0.02em;
+}
+
+/* ==== TABS (PESTAÑAS) ==== */
+.flex.gap-3.mb-4 {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--color-gray-light);
+  padding-bottom: 0.5rem;
+}
+
+/* Tab inactivo */
+.flex.gap-3 button.bg-white {
+  background: transparent !important;
+  color: var(--color-gray) !important;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer;
+}
+
+.flex.gap-3 button.bg-white:hover {
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-primary-light) !important;
+}
+
+/* Tab activo */
+.flex.gap-3 button.bg-\[\\#2b6cb0\] {
+  background: transparent !important;
+  color: var(--color-primary) !important;
+  border: none !important;
+  border-bottom: 3px solid var(--color-primary) !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0 !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  box-shadow: none !important;
+}
+
+/* ==== TABLA CONTENEDOR ==== */
+.border.border-purple-200.rounded-2xl {
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-gray-light) !important;
+  box-shadow: 0 4px 12px rgba(26, 54, 93, 0.08) !important;
+  border-radius: 12px !important;
+}
+
+/* ==== ENCABEZADO DE TABLA ==== */
+table.text-sm thead tr {
+  background: linear-gradient(30deg, #1a365d 0%, #2b6cb0 100%) !important;
+  box-shadow: 0 4px 12px rgba(26, 54, 93, 0.4) !important;
+}
+
+table.text-sm thead th {
+  color: var(--color-white) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.5px;
+  padding: 1rem 1rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ==== FILAS DE TABLA ==== */
+table.text-sm tbody tr {
+  transition: all 0.2s ease;
+}
+
+table.text-sm tbody tr:hover {
+  background: rgba(144, 205, 244, 0.1) !important;
+  transform: scale(1.001);
+}
+
+table.text-sm tbody tr.bg-white {
+  background: var(--color-white) !important;
+}
+
+table.text-sm tbody tr.bg-purple-50\/30 {
+  background: #f9fafb !important;
+}
+
+table.text-sm tbody td {
+  padding: 1rem !important;
+  border-bottom: 1px solid var(--color-gray-light) !important;
+  border-right: 1px solid #f1f5f9 !important;
+}
+
+/* ==== ENLACES EN TABLA ==== */
+table.text-sm a.text-purple-700 {
+  color: var(--color-primary) !important;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+table.text-sm a.text-purple-700:hover {
+  color: var(--color-primary-dark) !important;
+}
+
+/* ==== BOTÓN AGENDAR ENTREVISTA ==== */
+table.text-sm tbody td button.bg-\[\\#2b6cb0\] {
+  background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(43, 108, 176, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+table.text-sm tbody td button.bg-\[\\#2b6cb0\]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4) !important;
+}
+
+table.text-sm tbody td button.bg-\[\\#2b6cb0\]:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background: var(--color-gray) !important;
+  box-shadow: none !important;
+}
+
+/* ==== PAGINACIÓN ==== */
+.flex.flex-wrap.justify-center button.bg-purple-600 {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.flex.flex-wrap.justify-center button.bg-purple-600:hover {
+  background: var(--color-primary-dark) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(43, 108, 176, 0.3) !important;
+}
+
+.flex.flex-wrap.justify-center button.bg-gray-200 {
+  background: var(--color-gray-light) !important;
+  color: var(--color-gray) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  cursor: not-allowed !important;
+}
+
+.flex.flex-wrap.justify-center span.text-sm {
+  color: var(--color-dark) !important;
+  font-weight: 600 !important;
+  padding: 0 0.5rem;
+}
+
+/* ==== BOTÓN PROGRAMAR POR DÍA ==== */
+.flex.justify-end button.bg-\[\\#2b6cb0\] {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #2c7a7b 100%) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(56, 178, 172, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.flex.justify-end button.bg-\[\\#2b6cb0\]:hover {
+  background: linear-gradient(135deg, #2c7a7b 0%, var(--color-accent) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.4) !important;
+}
+
+/* ==== BOTÓN ACTUALIZAR ==== */
+.flex.justify-end button.bg-purple-600 {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.flex.justify-end button.bg-purple-600:hover {
+  background: linear-gradient(135deg, #3182ce 0%, var(--color-primary) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4) !important;
+}
+
+/* ==== MENSAJES ==== */
+p.text-center.text-gray-500 {
+  color: var(--color-gray) !important;
+  font-size: 1rem !important;
+  padding: 2rem;
+}
+
+p.text-center.text-red-500 {
+  color: var(--color-dark) !important;
+  background: var(--color-gray-light) !important;
+  padding: 1.5rem;
+  border-radius: 8px !important;
+  border: 2px solid var(--color-gray) !important;
+}
+
+/* ==== TABLA VACÍA ==== */
+table.text-sm tbody td.text-center.text-gray-500 {
+  color: var(--color-gray) !important;
+  font-style: italic;
+  padding: 3rem !important;
+}
+
+/* ==== ANIMACIONES ==== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Al final del archivo RespuestasFormulario.css */
+
+/* ==== CLASES PARA TABS ==== */
+.tab-inactive {
+  background: transparent !important;
+  color: var(--color-gray) !important;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  border-radius: 0 !important;
+}
+
+.tab-active {
+  background: transparent !important;
+  color: var(--color-primary) !important;
+  border: none !important;
+  border-bottom: 3px solid var(--color-primary) !important;
+  border-radius: 0 !important;
+}
+
+/* ==== CONTENEDOR TABLA SIN ALTURA FIJA ==== */
+.tabla-contenedor {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  position: relative;
+  border: 1px solid var(--color-gray-light) !important;
+  border-radius: 12px !important;
+  background: white !important;
+  box-shadow: 0 4px 12px rgba(26, 54, 93, 0.08) !important;
+}
+
+table.text-sm tbody tr {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 768px) {
+  h2.text-2xl {
+    font-size: 1.5rem !important;
+  }
+  
+  .flex.gap-3 button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  table.text-sm thead th {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  table.text-sm tbody td {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* ==== BOTÓN AGENDAR ENTREVISTA EN TABLA ==== */
+.btn-agendar-entrevista {
+  background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(43, 108, 176, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-agendar-entrevista:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4) !important;
+}
+
+.btn-agendar-entrevista:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background: var(--color-gray) !important;
+}
+
+/* ==== BOTÓN PROGRAMAR POR DÍA ==== */
+.btn-programar-dia {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #2c7a7b 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(56, 178, 172, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-programar-dia:hover {
+  background: linear-gradient(135deg, #2c7a7b 0%, var(--color-accent) 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.4) !important;
+}
+.btn-actualizar {
+  background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%) !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-actualizar:hover {
+  background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4) !important;
+}

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SimpleModal from "./SimpleModal";
+import "./RespuestasFormulario.css";
 
 function resolveRespuestaId(
   datos,
@@ -103,6 +104,7 @@ export default function RespuestasFormulario() {
   // Datos para la conexion del modal por dia
   const [rowIndex, setRowIndex] = useState(null);
   const [respuestaIdSeleccionada, setRespuestaIdSeleccionada] = useState(null);
+  const [respuestasConEntrevista, setRespuestasConEntrevista] = useState([]);
 
   const openOne = (idx, rid) => {
     console.log("openOne click idx:", idx, "rid:", rid);
@@ -131,6 +133,26 @@ export default function RespuestasFormulario() {
   };
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
+  // Cargar desde backend cuáles respuestas ya tienen entrevista
+  const recargarRespuestasConEntrevista = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const url = `${API_BASE}/api/formularios/${id}/respuestas-con-entrevista`;
+
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+
+      const ids = Array.isArray(res.data) ? res.data : res.data.ids || [];
+      setRespuestasConEntrevista(ids);
+    } catch (err) {
+      console.error("Error cargando respuestas con entrevista", err);
+    }
+  };
 
   // Cuando cambia "estado", forzamos página 1 y actualizamos URL
   useEffect(() => {
@@ -185,6 +207,14 @@ export default function RespuestasFormulario() {
     };
     fetchRespuestas();
   }, [id, estado, pagina, porPagina]);
+
+  // === Cargar qué respuestas ya tienen entrevista (persistente desde backend) ===
+  // === Cargar qué respuestas ya tienen entrevista (persistente desde backend) ===
+  useEffect(() => {
+    if (datos) {
+      recargarRespuestasConEntrevista();
+    }
+  }, [datos, id]);
 
   // === Helpers URL ===
   const setEstadoURL = (nuevo) => {
@@ -335,7 +365,7 @@ export default function RespuestasFormulario() {
         <button
           onClick={() => setEstadoURL(null)}
           className={`px-4 py-2 rounded-lg border ${
-            !estado ? "bg-[#2b6cb0] text-white" : "bg-white text-[#2b6cb0]"
+            !estado ? "tab-active" : "tab-inactive"
           }`}
         >
           Todos
@@ -343,9 +373,7 @@ export default function RespuestasFormulario() {
         <button
           onClick={() => setEstadoURL("aprobado")}
           className={`px-4 py-2 rounded-lg border ${
-            estado === "aprobado"
-              ? "bg-[#2b6cb0] text-white"
-              : "bg-white text-[#2b6cb0]"
+            estado === "aprobado" ? "tab-active" : "tab-inactive"
           }`}
         >
           Aprobados
@@ -353,31 +381,42 @@ export default function RespuestasFormulario() {
         <button
           onClick={() => setEstadoURL("rechazado")}
           className={`px-4 py-2 rounded-lg border ${
-            estado === "rechazado"
-              ? "bg-[#2b6cb0] text-white"
-              : "bg-white text-[#2b6cb0]"
+            estado === "rechazado" ? "tab-active" : "tab-inactive"
           }`}
         >
           Rechazados
         </button>
       </div>
 
-      <h2 className="text-2xl font-bold text-purple-700 mb-4">
-        Respuestas del Formulario #{id}
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-purple-700">
+          Respuestas del Formulario #{id}
+        </h2>
+
+        {/* Aquí moverás los botones */}
+
+        <div className="flex gap-3 items-center">
+          <button
+            onClick={() => window.location.reload()}
+            className="btn-actualizar"
+          >
+            Actualizar
+          </button>
+
+          {estado === "aprobado" && (
+            <button
+              onClick={openDay}
+              className="btn-programar-dia"
+              title="Programar entrevistas por día"
+            >
+              Programar entrevista por día
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* TABLA SCROLLEABLE */}
-      <div
-        className="border border-purple-200 rounded-2xl shadow-sm"
-        style={{
-          width: "100%",
-          maxWidth: "100%",
-          height: "50vh",
-          overflowX: "auto",
-          overflowY: "auto",
-          position: "relative",
-        }}
-      >
+      <div className="tabla-contenedor">
         <table
           className="text-sm"
           style={{
@@ -466,6 +505,8 @@ export default function RespuestasFormulario() {
                   respuestasPagina.length
                 );
 
+                const yaAgendada = respuestasConEntrevista.includes(rid);
+
                 return (
                   <tr
                     key={i}
@@ -473,6 +514,7 @@ export default function RespuestasFormulario() {
                       i % 2 === 0 ? "bg-white" : "bg-purple-50/30"
                     }`}
                   >
+                    {/* celdas normales */}
                     {fila.map((valor, j) => (
                       <td
                         key={j}
@@ -495,16 +537,20 @@ export default function RespuestasFormulario() {
                         }}
                       >
                         <button
-                          className="px-3 py-1 rounded bg-[#2b6cb0] text-white hover:opacity-90 disabled:opacity-50"
+                          className="btn-agendar-entrevista"
                           onClick={() => openOne(i, rid)}
-                          disabled={!rid}
+                          disabled={!rid || yaAgendada}
                           title={
-                            rid
-                              ? `respuesta_id: ${rid}`
-                              : "Sin ID en la respuesta actual"
+                            !rid
+                              ? "Sin ID en la respuesta actual"
+                              : yaAgendada
+                              ? "Ya tiene una entrevista agendada"
+                              : `respuesta_id: ${rid}`
                           }
                         >
-                          Agendar entrevista
+                          {yaAgendada
+                            ? "Entrevista agendada"
+                            : "Agendar entrevista"}
                         </button>
                       </td>
                     )}
@@ -614,13 +660,27 @@ export default function RespuestasFormulario() {
               },
             });
 
+            // marcar esta respuesta como “ya tiene entrevista”
+            setRespuestasConEntrevista((prev) =>
+              prev.includes(respuesta_id) ? prev : [...prev, respuesta_id]
+            );
+
             alert("Entrevista guardada ✅");
             closeAll();
             // opcional: volver a cargar entrevistas o refrescar
             // window.location.reload();
           } catch (err) {
             console.error(err);
-            alert("No se pudo guardar la entrevista.");
+            if (err.response?.status === 409) {
+              // el backend dice que ya existía una entrevista
+              const respuesta_id = respuestaIdSeleccionada;
+              setRespuestasConEntrevista((prev) =>
+                prev.includes(respuesta_id) ? prev : [...prev, respuesta_id]
+              );
+              alert("Esta respuesta ya tiene una entrevista agendada.");
+            } else {
+              alert("No se pudo guardar la entrevista.");
+            }
           }
         }}
         onClose={closeAll}
@@ -672,14 +732,56 @@ export default function RespuestasFormulario() {
       <SimpleModal
         isOpen={showModalDay}
         title="Programar día de entrevistas"
-        onAccept={() => {
-          console.log("PROGRAMAR POR DÍA", {
-            /* ... */
-          });
-          closeAll();
+        onAccept={async () => {
+          try {
+            const token = localStorage.getItem("token");
+            const API =
+              import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+            const url = `${API}/api/formularios/${id}/entrevistas/dia`;
+
+            const payload = {
+              fecha: dayFecha,
+              hora_inicio: dayInicio,
+              hora_fin: dayFin,
+              duracion: dayDuracion,
+              // detalle: opcional, si luego quieres un campo "detalle" para el día
+            };
+
+            console.log("POST (entrevistas por día)", url, payload);
+
+            const res = await axios.post(url, payload, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            });
+
+            const creadas = res.data?.creadas ?? [];
+            const totalSlots = res.data?.total_slots ?? creadas.length;
+
+            if (!creadas.length) {
+              alert(
+                "No se creó ninguna entrevista. " +
+                  "Puede que no haya aprobados sin entrevista o el rango horario no genera slots."
+              );
+            } else {
+              alert(
+                `Se generaron ${creadas.length} entrevistas ` +
+                  `para el ${dayFecha} (entrevistas disponibles: ${totalSlots}).`
+              );
+            }
+
+            // refrescamos qué respuestas ya tienen entrevista para bloquear botones
+            await recargarRespuestasConEntrevista();
+
+            closeAll();
+          } catch (err) {
+            console.error("Error generando entrevistas por día", err);
+            alert("No se pudieron generar las entrevistas por día.");
+          }
         }}
         onClose={closeAll}
-        acceptText="Generar slots"
+        acceptText="Generar horarios"
         acceptDisabled={
           !dayFecha ||
           !dayInicio ||
@@ -733,7 +835,7 @@ export default function RespuestasFormulario() {
         </div>
       </SimpleModal>
 
-      <div className="flex justify-end mt-4">
+      {/* <div className="flex justify-end mt-4">
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
@@ -746,13 +848,13 @@ export default function RespuestasFormulario() {
         <div className="flex justify-end mt-4">
           <button
             onClick={openDay}
-            className="px-4 py-2 rounded bg-[#2b6cb0] text-white hover:opacity-90"
+            className="btn-programar-dia"
             title="Programar entrevistas por día"
           >
             Programar entrevista por día
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
