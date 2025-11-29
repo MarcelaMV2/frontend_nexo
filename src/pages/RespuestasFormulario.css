@@ -375,3 +375,41 @@ table.text-sm tbody tr {
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4) !important;
 }
+
+/* ==== BOTÓN ENVIAR CORREOS DE RECHAZO ==== */
+/* ==== BOTÓN ENVIAR CORREOS DE RECHAZO (PALETA NEXO) ==== */
+.btn-rechazos {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-dark) 0%,
+    var(--color-dark) 100%
+  ) !important;
+  color: var(--color-white) !important;
+  border: 1px solid var(--color-primary-dark) !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(26, 32, 44, 0.35) !important; /* dark */
+  transition: all 0.3s ease !important;
+}
+
+.btn-rechazos:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  ) !important;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-rechazos:disabled {
+  background: var(--color-gray-light) !important;
+  color: var(--color-gray) !important;
+  border-color: var(--color-gray-light) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.8 !important;
+}

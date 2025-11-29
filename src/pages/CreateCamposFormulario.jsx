@@ -14,9 +14,39 @@ import {
   MapPin,
   CircleDot,
   Link2,
+  SquarePen,
+  Info, // 👈 nuevo
 } from "lucide-react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import "./CreateCamposFormulario.css"; // <<--- IMPORTA EL CSS
+
+// Formatea "2025-11-20" o "2025-11-20T00:00:00.000000Z" → "20 de noviembre de 2025"
+// sin problemas de zona horaria
+const MESES_ES = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
+
+function formatearFechaLegible(fechaStr) {
+  if (!fechaStr) return "";
+  const solo = String(fechaStr).slice(0, 10); // "YYYY-MM-DD"
+  const [y, m, d] = solo.split("-").map(Number);
+  if (!y || !m || !d) return "";
+
+  const dia = d.toString().padStart(2, "0");
+  const mesNombre = MESES_ES[m - 1] ?? "";
+  return `${dia} de ${mesNombre} de ${y}`;
+}
 
 export default function CreateCamposFormulario() {
   const { id } = useParams();
@@ -31,6 +61,12 @@ export default function CreateCamposFormulario() {
   const [tipoArchivo, setTipoArchivo] = useState("todos");
 
   const token = localStorage.getItem("token");
+  const [formulario, setFormulario] = useState(null);
+  const [editandoMeta, setEditandoMeta] = useState(false);
+
+  const [tituloForm, setTituloForm] = useState("");
+  const [descripcionForm, setDescripcionForm] = useState("");
+  const [fechaCierre, setFechaCierre] = useState(""); // formato yyyy-mm-dd
 
   const agregarOpcion = (e) => {
     e.preventDefault();
@@ -44,13 +80,32 @@ export default function CreateCamposFormulario() {
   };
 
   useEffect(() => {
-    const fetchCampos = async () => {
+    const fetchDatos = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/formularios/${id}/campos`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const payload = res.data;
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const [resForm, resCampos] = await Promise.all([
+          axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/api/formularios/${id}`,
+            { headers }
+          ),
+          axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/api/formularios/${id}/campos`,
+            { headers }
+          ),
+        ]);
+
+        // 👉 Datos del formulario
+        const f = resForm.data;
+        setFormulario(f);
+        setTituloForm(f.titulo || ""); // ajusta si el campo se llama distinto
+        setDescripcionForm(f.descripcion || "");
+        setFechaCierre(
+          f.fecha_cierre ? String(f.fecha_cierre).slice(0, 10) : ""
+        ); // yyyy-mm-dd
+
+        // 👉 Campos del formulario (lo que ya tenías)
+        const payload = resCampos.data;
         const lista = Array.isArray(payload)
           ? payload
           : Array.isArray(payload.data)
@@ -60,11 +115,12 @@ export default function CreateCamposFormulario() {
           : [];
         setCampos(lista);
       } catch (err) {
-        console.error("Error al obtener los campos", err);
+        console.error("Error al obtener datos del formulario", err);
         setCampos([]);
       }
     };
-    fetchCampos();
+
+    fetchDatos();
   }, [id, token]);
 
   const handleGuardarCampo = async (e) => {
@@ -153,6 +209,44 @@ export default function CreateCamposFormulario() {
     setCampos(items);
   };
 
+  const handleGuardarMetaFormulario = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const payload = {
+        titulo: tituloForm,
+        descripcion: descripcionForm,
+        fecha_cierre: fechaCierre || null, // si está vacío, lo mandamos null
+      };
+
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/api/formularios/${id}`,
+        payload,
+        { headers }
+      );
+
+      // actualiza estado local
+      setFormulario((prev) => ({ ...prev, ...res.data }));
+      setEditandoMeta(false);
+      alert("Datos del formulario actualizados ✅");
+    } catch (err) {
+      console.error("Error al actualizar formulario", err);
+      alert("No se pudieron actualizar los datos del formulario ❌");
+    }
+  };
+
+  const handleCancelarMeta = () => {
+    if (!formulario) return;
+    setTituloForm(formulario.titulo || "");
+    setDescripcionForm(formulario.descripcion || "");
+    setFechaCierre(
+      formulario.fecha_cierre
+        ? String(formulario.fecha_cierre).slice(0, 10)
+        : ""
+    );
+    setEditandoMeta(false);
+  };
+
   const tiposDeCampo = [
     { value: "texto_corto", label: "Texto corto", icon: <Type size={18} /> },
     {
@@ -176,6 +270,132 @@ export default function CreateCamposFormulario() {
     <div className="nexo-page">
       {/* Panel principal */}
       <div className="nexo-main">
+        {/* META DEL FORMULARIO: nombre, descripción y fecha de cierre */}
+        {formulario && (
+          <div
+            style={{
+              background: "var(--color-bg)", // antes #eef2ff
+              border: "1px solid var(--color-gray-light)", // antes #c4b5fd
+              borderRadius: "12px",
+              padding: "14px 18px",
+              marginBottom: "18px",
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "16px",
+              alignItems: "flex-start",
+            }}
+          >
+            {!editandoMeta ? (
+              <>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "1.05rem",
+                      color: "var(--color-dark)",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {formulario.titulo || "Formulario sin título"}
+                  </div>
+                  <div
+                    style={{ color: "var(--color-gray)", fontSize: "0.9rem" }}
+                  >
+                    {formulario.descripcion || "Sin descripción"}
+                  </div>
+                  {formulario.fecha_cierre && (
+                    <div
+                      style={{
+                        marginTop: 6,
+                        fontSize: "0.85rem",
+                        color: "var(--color-primary-dark)",
+                      }}
+                    >
+                      Cierra el:{" "}
+                      <strong>
+                        {formatearFechaLegible(formulario.fecha_cierre)}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className="nexo-btn nexo-btn-secondary nexo-btn-icon"
+                  onClick={() => setEditandoMeta(true)}
+                  title="Editar datos del formulario"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "10px 12px",
+                    borderRadius: "10px",
+                    gap: 0,
+                  }}
+                >
+                  <SquarePen size={18} />
+                </button>
+              </>
+            ) : (
+              <div style={{ width: "100%" }}>
+                <div className="nexo-field">
+                  <label className="nexo-label">Nombre del formulario</label>
+                  <input
+                    type="text"
+                    className="nexo-input"
+                    value={tituloForm}
+                    onChange={(e) => setTituloForm(e.target.value)}
+                  />
+                </div>
+
+                <div className="nexo-field">
+                  <label className="nexo-label">Descripción</label>
+                  <textarea
+                    className="nexo-input"
+                    rows={3}
+                    value={descripcionForm}
+                    onChange={(e) => setDescripcionForm(e.target.value)}
+                  />
+                </div>
+
+                <div className="nexo-field">
+                  <label className="nexo-label">Fecha de cierre</label>
+                  <input
+                    type="date"
+                    className="nexo-input"
+                    value={fechaCierre || ""}
+                    onChange={(e) => setFechaCierre(e.target.value)}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "8px",
+                    marginTop: "8px",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="nexo-btn nexo-btn-secondary"
+                    onClick={handleGuardarMetaFormulario}
+                  >
+                    Guardar cambios
+                  </button>
+                  <button
+                    type="button"
+                    className="nexo-btn"
+                    onClick={handleCancelarMeta}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <h2 className="nexo-title">
           Campos del Formulario
           <Link
@@ -189,34 +409,23 @@ export default function CreateCamposFormulario() {
         {/* 👇 AGREGAR ESTA NOTA INFORMATIVA */}
         <div
           style={{
-            background: "#e0f2fe",
-            border: "1px solid #7dd3fc",
+            background: "var(--color-bg)",
+            border: "1px dashed var(--color-gray-light)",
             borderRadius: "8px",
-            padding: "12px 16px",
+            padding: "8px 12px",
             marginBottom: "20px",
             display: "flex",
-            gap: "10px",
-            alignItems: "start",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "0.85rem",
+            color: "var(--color-gray)",
           }}
         >
-          <span style={{ fontSize: "20px" }}>ℹ️</span>
-          <div style={{ flex: 1 }}>
-            <strong
-              style={{
-                color: "#0369a1",
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              Campo automático de correo electrónico
-            </strong>
-            <p style={{ color: "#075985", margin: 0, fontSize: "0.9rem" }}>
-              Todos los formularios incluyen automáticamente un campo de{" "}
-              <strong>correo electrónico obligatorio</strong> como primer campo.
-              Este no aparece aquí pero sí en la vista previa y en el formulario
-              público.
-            </p>
-          </div>
+          <Info size={18} className="nexo-info-icon" />
+          <span>
+            El correo electrónico del postulante se registra de forma automática
+            al completar el formulario.
+          </span>
         </div>
 
         <form onSubmit={handleGuardarCampo}>

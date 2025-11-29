@@ -22,6 +22,7 @@ import RegistrosRechazados from "./pages/RegistrosRechazados";
 import RegistrosAprobados from "./pages/RegistrosAprobados";
 import EntrevistasAgendadas from "./pages/EntrevistasAgendadas";
 import EntrevistaConfirmada from "./pages/EntrevistaConfirmada";
+import EntrevistasCalendario from "./pages/EntrevistasCalendario";
 
 function App() {
   return (
@@ -72,6 +73,10 @@ function App() {
             path="formulario/:id/entrevistas"
             element={<EntrevistasAgendadas />}
           />
+          <Route
+            path="formulario/:id/entrevistas/calendario"
+            element={<EntrevistasCalendario />}
+          />
           {/* <Route
             path="formulario/:id/aprobados"
             element={<RegistrosAprobados />}
@@ -99,7 +104,10 @@ function App() {
         <Route path="/formularios/:id/gracias" element={<Gracias />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/entrevista-confirmada" element={<EntrevistaConfirmada />} />
+        <Route
+          path="/entrevista-confirmada"
+          element={<EntrevistaConfirmada />}
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -1,0 +1,153 @@
+.nexo-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.nexo-cal-cell {
+  min-height: 90px;
+  border: 1px solid #e2e8f0;
+  padding: 4px 6px;
+  font-size: 12px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+/* cabecera L M X J V S D */
+.nexo-cal-header {
+  background: #2b6cb0;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* celdas vacías previas al día 1 */
+.nexo-cal-empty {
+  background: #f7fafc;
+}
+
+/* días */
+.nexo-cal-day {
+  background: #f9fafb;
+  position: relative;
+}
+
+.nexo-cal-day-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.nexo-cal-badge {
+  margin-top: 2px;
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 10px;
+  background: #2b6cb0;
+  color: #ffffff;
+}
+
+.nexo-cal-interview {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #2d3748;
+}
+
+.nexo-cal-more {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #718096;
+}
+.nexo-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.nexo-cal-cell {
+  min-height: 90px;
+  border: 1px solid #e2e8f0;
+  padding: 4px 6px;
+  font-size: 12px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.nexo-cal-header {
+  background: #2b6cb0;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nexo-cal-empty {
+  background: #f7fafc;
+}
+
+.nexo-cal-day {
+  background: #f9fafb;
+  position: relative;
+}
+
+/* 👇 días con entrevistas: se ve que son clickeables */
+.nexo-cal-day-has-items {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.nexo-cal-day-has-items:hover {
+  background: #edf2f7;
+}
+
+.nexo-cal-day-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.nexo-cal-badge {
+  margin-top: 2px;
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 10px;
+  background: #2b6cb0;
+  color: #ffffff;
+}
+
+.nexo-cal-interview {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #2d3748;
+}
+
+.nexo-cal-more {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #718096;
+}
+
+/* colores por estado */
+.nexo-cal-interview.estado-pendiente,
+.estado-pendiente {
+  color: #2b6cb0; /* azul primario / celeste */
+}
+
+.nexo-cal-interview.estado-confirmada,
+.estado-confirmada {
+  color: #2f855a; /* verde medio */
+}
+
+.nexo-cal-interview.estado-realizada,
+.estado-realizada {
+  color: #276749;        /* verde más oscuro */
+  font-weight: 600;
+}
+

@@ -105,6 +105,8 @@ export default function RespuestasFormulario() {
   const [rowIndex, setRowIndex] = useState(null);
   const [respuestaIdSeleccionada, setRespuestaIdSeleccionada] = useState(null);
   const [respuestasConEntrevista, setRespuestasConEntrevista] = useState([]);
+  const [enviandoRechazos, setEnviandoRechazos] = useState(false);
+  const [sinPendientesRechazo, setSinPendientesRechazo] = useState(false);
 
   const openOne = (idx, rid) => {
     console.log("openOne click idx:", idx, "rid:", rid);
@@ -231,6 +233,61 @@ export default function RespuestasFormulario() {
     navigate({ search: params.toString() }, { replace: true });
   };
 
+  const handleEnviarCorreosRechazo = async () => {
+    if (!puedeEnviarRechazos) {
+      alert("Aún no han pasado las 36 horas desde el cierre del formulario.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "¿Seguro que deseas enviar los correos de rechazo a los postulantes rechazados pendientes?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setEnviandoRechazos(true);
+      const token = localStorage.getItem("token");
+      const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
+      const url = `${API}/api/formularios/${id}/rechazos/enviar-correos`;
+
+      const res = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const msg = res.data?.message || "Proceso de envío completado.";
+      const pendientesRestantes = res.data?.pendientes_restantes;
+
+      // 👇 si ya no quedan pendientes, bloqueamos el botón
+      if (
+        typeof pendientesRestantes === "number" &&
+        pendientesRestantes === 0
+      ) {
+        setSinPendientesRechazo(true);
+      }
+
+      alert(msg);
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err.response?.data?.message ||
+        "No se pudieron enviar los correos de rechazo.";
+      alert(msg);
+    } finally {
+      setEnviandoRechazos(false);
+    }
+  };
+
   if (error) return <p className="text-red-500 text-center mt-5">{error}</p>;
   if (!datos)
     return (
@@ -250,7 +307,29 @@ export default function RespuestasFormulario() {
         (pagina - 1) * porPagina,
         pagina * porPagina
       );
+  /***********AQUII**** */
 
+  // === Info de cierre del formulario (para correos de rechazo) ===
+  const fechaCierreRaw = datos.fecha_cierre || null;
+  const fechaCierre = fechaCierreRaw ? new Date(fechaCierreRaw) : null;
+
+  let formularioCerrado = false;
+  let puedeEnviarRechazos = false;
+  let horasRestantes = null;
+
+  if (fechaCierre) {
+    const ahora = new Date();
+    const diffMs = ahora.getTime() - fechaCierre.getTime();
+    const diffHoras = diffMs / 1000 / 60 / 60;
+
+    formularioCerrado = diffHoras >= 0;
+    puedeEnviarRechazos = diffHoras >= 36; // 👈 36 horas
+    if (!puedeEnviarRechazos) {
+      horasRestantes = Math.max(0, Math.ceil(36 - diffHoras));
+    }
+  }
+
+  /**********AQUI******* */
   const respuestaIds =
     datos?.respuesta_ids ??
     datos?.respuestaIds ??
@@ -410,6 +489,22 @@ export default function RespuestasFormulario() {
               title="Programar entrevistas por día"
             >
               Programar entrevista por día
+            </button>
+          )}
+
+          {estado === "rechazado" && (
+            <button
+              onClick={handleEnviarCorreosRechazo}
+              disabled={
+                !puedeEnviarRechazos || enviandoRechazos || sinPendientesRechazo
+              }
+              className="btn-rechazos"
+            >
+              {enviandoRechazos
+                ? "Enviando rechazos..."
+                : sinPendientesRechazo
+                ? "Correos de rechazo ya enviados"
+                : "Enviar correos de rechazo"}
             </button>
           )}
         </div>

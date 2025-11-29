@@ -27,6 +27,8 @@ export default function FormularioPublico() {
   // respuestas { [campoId]: string | string[] }
   const [respuestas, setRespuestas] = useState({});
 
+  const [cerrado, setCerrado] = useState(false);
+
   const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
   useEffect(() => {
@@ -38,6 +40,16 @@ export default function FormularioPublico() {
         ]);
 
         setFormulario(resF.data);
+
+        const fcRaw = resF.data?.fecha_cierre;
+        if (fcRaw) {
+          const fcDate = new Date(fcRaw); // sin concatenar nada
+          const ahora = new Date();
+
+          if (!Number.isNaN(fcDate.getTime()) && ahora > fcDate) {
+            setCerrado(true);
+          }
+        }
 
         const payload = resC.data;
         const lista = Array.isArray(payload)
@@ -102,6 +114,12 @@ export default function FormularioPublico() {
     e.preventDefault();
     setEnviando(true);
 
+    if (cerrado) {
+      alert("Este formulario ya no está disponible para nuevas respuestas.");
+      setEnviando(false);
+      return;
+    }
+
     try {
       // 👇 Validar que el email exista
       const emailPostulante = respuestas["email-auto"];
@@ -131,7 +149,22 @@ export default function FormularioPublico() {
       navigate(`/formularios/${id}/gracias`, { replace: true });
     } catch (err) {
       console.error("Error completo:", err.response?.data || err);
-      alert("No se pudo enviar el formulario. Intenta nuevamente.");
+
+      const data = err.response?.data;
+      const msgBackend = data?.message;
+
+      if (msgBackend) {
+        alert(msgBackend);
+
+        // Si el backend dice que el formulario ya no está disponible,
+        // marcamos cerrado para que aparezca la pantalla de "no disponible"
+        if (msgBackend.toLowerCase().includes("ya no está disponible")) {
+          setCerrado(true);
+        }
+      } else {
+        alert("No se pudo enviar el formulario. Intenta nuevamente.");
+      }
+
       setEnviando(false);
     }
   };
@@ -428,7 +461,44 @@ export default function FormularioPublico() {
     }
   };
 
+  const fechaCierreLegible = formulario?.fecha_cierre
+    ? new Date(formulario.fecha_cierre).toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        timeZone: "UTC",
+      })
+    : "";
+
   if (loading) return <div style={{ padding: "20px" }}>Cargando…</div>;
+
+  if (cerrado) {
+    return (
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: 20 }}>
+        <div
+          style={{
+            background: "#edf2f7",
+            border: "1px solid #cbd5e0",
+            borderRadius: 12,
+            padding: 24,
+            textAlign: "center",
+          }}
+        >
+          <h2 style={{ color: "#1a365d", marginBottom: 12 }}>
+            Formulario no disponible
+          </h2>
+          <p style={{ color: "#4a5568", marginBottom: 4 }}>
+            Este formulario ha dejado de recibir respuestas.
+          </p>
+          {formulario?.fecha_cierre && (
+            <p style={{ color: "#718096", fontSize: "0.9rem" }}>
+              Fecha de cierre: <strong>{fechaCierreLegible}</strong>
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: 20 }}>

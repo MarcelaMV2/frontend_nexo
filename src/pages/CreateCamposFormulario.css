@@ -258,3 +258,32 @@
 .nexo-grow {
   flex: 1;
 }
+
+.nexo-btn-icon {
+  padding: 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Botón solo icono (sin fondo, sin caja rara) */
+.nexo-btn-icon {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nexo-btn-icon:hover {
+  color: white;
+  transform: translateY(-1px);
+}
+
+.nexo-btn-icon:active {
+  transform: translateY(0);
+}

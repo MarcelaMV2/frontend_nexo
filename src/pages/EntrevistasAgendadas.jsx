@@ -1,8 +1,9 @@
+// EntrevistasAgendadas.jsx
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import SimpleModal from "./SimpleModal";
-import './EntrevistasAgendadas.css';
+import "./EntrevistasAgendadas.css";
 
 // Recorta textos largos para no romper la tabla
 function cut(s, n = 40) {
@@ -14,8 +15,6 @@ function cut(s, n = 40) {
 function formatHora(horaRaw) {
   if (!horaRaw) return "";
   const s = String(horaRaw);
-
-  // Busca cualquier patrón HH:MM dentro del string
   const match = s.match(/(\d{2}:\d{2})/);
   return match ? match[1] : s;
 }
@@ -43,7 +42,7 @@ export default function EntrevistasAgendadas() {
       const token = localStorage.getItem("token");
       const params = new URLSearchParams({
         page: String(p),
-        per_page: String(porPagina), // <- usa per_page
+        per_page: String(porPagina),
       });
       const url = `${API}/api/formularios/${formularioId}/entrevistas?${params.toString()}`;
       const { data } = await axios.get(url, {
@@ -53,8 +52,6 @@ export default function EntrevistasAgendadas() {
         },
       });
 
-      // Shape devuelto por tu controlador:
-      // { data: [...], pagination: { total, current_page, per_page, last_page } }
       const arr = Array.isArray(data) ? data : data.data || [];
       setItems(arr);
       const totalSrv = data.pagination?.total ?? arr.length ?? 0;
@@ -125,7 +122,6 @@ export default function EntrevistasAgendadas() {
   async function reprogramar(id, fecha, hora) {
     try {
       const token = localStorage.getItem("token");
-      // Reprogramar = mismo endpoint de estado, con nueva fecha/hora
       const url = `${API}/api/entrevistas/${id}/estado`;
       await axios.patch(
         url,
@@ -156,9 +152,19 @@ export default function EntrevistasAgendadas() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#2b6cb0] mb-4">
-        Entrevistas agendadas
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-[#2b6cb0]">
+          Entrevistas agendadas
+        </h2>
+
+        {/* BOTÓN PARA IR AL CALENDARIO */}
+        <Link
+          to={`/dashboard/formulario/${formularioId}/entrevistas/calendario`}
+          className="px-4 py-2 rounded-full text-sm font-medium bg-white border border-[#2b6cb0] text-[#2b6cb0] hover:bg-[#2b6cb0] hover:text-white transition"
+        >
+          Ver calendario
+        </Link>
+      </div>
 
       <div className="border rounded-2xl overflow-hidden shadow-sm">
         <table className="w-full text-sm">
@@ -180,22 +186,12 @@ export default function EntrevistasAgendadas() {
                   it.estado === "cancelada_postulante";
                 const esRealizada = it.estado === "realizada";
                 const esConfirmada = it.estado === "confirmada";
-                const esSolicitudReprog =
-                  it.estado === "solicitud_reprogramacion";
-                const esPendiente = it.estado === "pendiente";
 
-                // Reglas:
-                // - Reprogramar: deshabilitada si está cancelada, realizada o confirmada
                 const disableReprogramar =
                   esCancelada || esRealizada || esConfirmada;
-
-                // - Cancelar: deshabilitada si está cancelada o realizada
                 const disableCancelar = esCancelada || esRealizada;
-
-                // - Marcar realizada: deshabilitada si está cancelada o realizada
                 const disableMarcarRealizada = esCancelada || esRealizada;
 
-                // ======= NUEVO: nombre + correo a partir de preview =======
                 const preview = Array.isArray(it.preview) ? it.preview : [];
 
                 const campoNombre = preview.find((p) =>
@@ -211,7 +207,6 @@ export default function EntrevistasAgendadas() {
 
                 return (
                   <tr key={it.id} className="odd:bg-white even:bg-gray-50">
-                    {/* COL 1: nombre + correo */}
                     <td className="px-6 py-3 align-top">
                       <div className="font-medium">{nombre}</div>
                       {correo && (
@@ -221,16 +216,10 @@ export default function EntrevistasAgendadas() {
                       )}
                     </td>
 
-                    {/* COL 2: fecha */}
                     <td className="px-6 py-3">{it.fecha || "—"}</td>
-
-                    {/* COL 3: hora */}
                     <td className="px-6 py-3">{formatHora(it.hora)}</td>
-
-                    {/* COL 4: estado */}
                     <td className="px-6 py-3">{badge(it.estado)}</td>
 
-                    {/* COL 5: acciones */}
                     <td className="px-6 py-3 space-x-2">
                       <button
                         className="btn-reprogramar px-3 py-1 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed"
